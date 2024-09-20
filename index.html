@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Space Game</title>
+    <style>
+     html, body {
+         overflow: hidden; /* Hide scrollbars */
+         margin: 0;        /* Remove any default margin */
+         padding: 0;
+         height: 100%;     /* Ensure the body and html take up the full height of the viewport */
+     }
+        canvas {
+            background-color: black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Ship properties
+    const ship = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        angle: 0, // In radians
+        velocityX: 0,
+        velocityY: 0,
+        thrustPower: 0.1,
+        rotationSpeed: 0.05,
+        drag: 0.99, // Simulate drag/friction in space
+        size: 20
+    };
+
+    // Arrow keys status
+    const keys = {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false
+    };
+
+    // Event listeners for key presses
+    window.addEventListener("keydown", (e) => {
+        if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
+    });
+
+    window.addEventListener("keyup", (e) => {
+        if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
+    });
+
+    // Game loop
+    function gameLoop() {
+        updateShip();
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Update the ship's position and velocity
+    function updateShip() {
+        if (keys.ArrowLeft) {
+            ship.angle -= ship.rotationSpeed;
+        }
+        if (keys.ArrowRight) {
+            ship.angle += ship.rotationSpeed;
+        }
+        if (keys.ArrowUp) {
+            // Apply thrust in the direction of the ship's angle
+            ship.velocityX += Math.cos(ship.angle) * ship.thrustPower;
+            ship.velocityY += Math.sin(ship.angle) * ship.thrustPower;
+        }
+
+        // Apply drag to slow down the ship over time (simulating friction)
+        ship.velocityX *= ship.drag;
+        ship.velocityY *= ship.drag;
+
+        // Update position based on velocity
+        ship.x += ship.velocityX;
+        ship.y += ship.velocityY;
+
+        // Screen wrapping
+        if (ship.x > canvas.width) ship.x = 0;
+        if (ship.x < 0) ship.x = canvas.width;
+        if (ship.y > canvas.height) ship.y = 0;
+        if (ship.y < 0) ship.y = canvas.height;
+    }
+
+    // Draw the ship on the canvas
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+        // Draw the ship as a simple triangle
+        ctx.save();
+        ctx.translate(ship.x, ship.y);
+        ctx.rotate(ship.angle);
+        ctx.beginPath();
+        ctx.moveTo(ship.size, 0);
+        ctx.lineTo(-ship.size / 2, ship.size / 2);
+        ctx.lineTo(-ship.size / 2, -ship.size / 2);
+        ctx.closePath();
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // Start the game loop
+    gameLoop();
+</script>
+
+</body>
+</html>

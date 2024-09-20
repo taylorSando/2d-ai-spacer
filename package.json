@@ -1,0 +1,11 @@
+{
+  "name": "2d-ai-spacer",
+  "version": "1.0.0",
+  "description": "Largely AI generated 2D newton space sim",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
